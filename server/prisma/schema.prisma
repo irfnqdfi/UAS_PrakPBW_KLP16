@@ -1,0 +1,164 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Gender {
+  male
+  female
+}
+
+enum ActivityLevel {
+  sedentary
+  lightly_active
+  moderately_active
+  very_active
+  extra_active
+}
+
+enum GoalType {
+  bulking
+  cutting
+  maintaining
+}
+
+enum ReminderType {
+  workout
+  water
+  protein
+  progress_check
+}
+
+// ─────────────────────────────────────────
+// 1. USERS
+// ─────────────────────────────────────────
+model User {
+  id             Int           @id @default(autoincrement())
+  name           String        @db.VarChar(100)
+  email          String        @unique @db.VarChar(150)
+  password       String        @db.VarChar(255)
+  gender         Gender
+  age            Int
+  height         Float         // cm
+  weight         Float         // kg
+  activity_level ActivityLevel @default(moderately_active)
+  goal           GoalType      @default(maintaining)
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
+
+  // Relations
+  measurements   BodyMeasurement[]
+  workout_logs   WorkoutLog[]
+  nutrition_logs NutritionLog[]
+  fitness_goals  FitnessGoal[]
+  reminders      Reminder[]
+
+  @@map("users")
+}
+
+// ─────────────────────────────────────────
+// 2. BODY MEASUREMENTS
+// ─────────────────────────────────────────
+model BodyMeasurement {
+  id            Int      @id @default(autoincrement())
+  user_id       Int
+  weight        Float    // kg
+  body_fat_pct  Float?   // %
+  lean_mass     Float?   // kg (auto-calculated)
+  chest         Float?   // cm
+  waist         Float?   // cm
+  hips          Float?   // cm
+  arms          Float?   // cm
+  thighs        Float?   // cm
+  notes         String?  @db.Text
+  recorded_at   DateTime @default(now())
+
+  user          User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("body_measurements")
+}
+
+// ─────────────────────────────────────────
+// 3. WORKOUT LOGS
+// ─────────────────────────────────────────
+model WorkoutLog {
+  id            Int      @id @default(autoincrement())
+  user_id       Int
+  session_name  String?  @db.VarChar(100)  // e.g. "Push Day", "Leg Day"
+  category      String   @db.VarChar(50)   // chest, back, legs, shoulders, arms, cardio, full_body
+  exercise_name String   @db.VarChar(100)
+  sets          Int
+  reps          Int
+  weight_used   Float?   // kg (null for bodyweight)
+  duration_min  Int?     // for cardio
+  notes         String?  @db.Text
+  logged_at     DateTime @default(now())
+
+  user          User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("workout_logs")
+}
+
+// ─────────────────────────────────────────
+// 4. NUTRITION LOGS
+// ─────────────────────────────────────────
+model NutritionLog {
+  id           Int      @id @default(autoincrement())
+  user_id      Int
+  calories     Float
+  protein      Float    // gram
+  carbs        Float    // gram
+  fat          Float    // gram
+  water_intake Float    // liter
+  meal_notes   String?  @db.Text
+  logged_at    DateTime @default(now())
+
+  user         User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("nutrition_logs")
+}
+
+// ─────────────────────────────────────────
+// 5. FITNESS GOALS
+// ─────────────────────────────────────────
+model FitnessGoal {
+  id               Int       @id @default(autoincrement())
+  user_id          Int
+  goal_type        GoalType
+  target_weight    Float?    // kg
+  target_body_fat  Float?    // %
+  target_calories  Float?    // kcal/day
+  target_protein   Float?    // gram/day
+  target_water     Float?    // liter/day
+  deadline         DateTime?
+  is_active        Boolean   @default(true)
+  notes            String?   @db.Text
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+
+  user             User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("fitness_goals")
+}
+
+// ─────────────────────────────────────────
+// 6. REMINDERS
+// ─────────────────────────────────────────
+model Reminder {
+  id         Int          @id @default(autoincrement())
+  user_id    Int
+  type       ReminderType
+  label      String       @db.VarChar(100)  // e.g. "Minum air pagi"
+  time       String       @db.VarChar(5)    // "07:00" format HH:mm
+  days       String       @db.VarChar(50)   // "mon,tue,wed,thu,fri" atau "everyday"
+  is_active  Boolean      @default(true)
+  created_at DateTime     @default(now())
+
+  user       User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("reminders")
+}
