@@ -14,7 +14,7 @@ async function main() {
     where: { email: 'irfan@gymtrack.com' },
     update: {},
     create: {
-      name: 'Irfan Maulana',
+      name: 'Irfan Qadafi',
       email: 'irfan@gymtrack.com',
       password: hash,
       gender: 'male',
@@ -30,11 +30,11 @@ async function main() {
     where: { email: 'sari@gymtrack.com' },
     update: {},
     create: {
-      name: 'Sari Dewi',
-      email: 'sari@gymtrack.com',
+      name: 'Khalish Aufa',
+      email: 'khalish@gymtrack.com',
       password: hash,
-      gender: 'female',
-      age: 22,
+      gender: 'male',
+      age: 20,
       height: 160,
       weight: 55,
       activity_level: 'lightly_active',
@@ -173,7 +173,7 @@ async function main() {
   console.log('\n🎉 Database seeded successfully!');
   console.log('📧 Test accounts:');
   console.log('   irfan@gymtrack.com  | password123 (Bulking)');
-  console.log('   sari@gymtrack.com   | password123 (Cutting)');
+  console.log('   khalish@gymtrack.com   | password123 (Cutting)');
   console.log('   budi@gymtrack.com   | password123 (Maintaining)');
 }
 
