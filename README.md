@@ -78,7 +78,7 @@ Frontend: `http://localhost:5173`
 | Email | Password | Goal |
 |-------|----------|------|
 | irfan@gymtrack.com | password123 | Bulking |
-| sari@gymtrack.com | password123 | Cutting |
+| khalish@gymtrack.com | password123 | Cutting |
 | budi@gymtrack.com | password123 | Maintaining |
 
 ## Struktur Folder
